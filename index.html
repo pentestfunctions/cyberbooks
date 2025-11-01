@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Book Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: rgba(15, 20, 40, 0.85);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #00d4ff;
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            font-weight: 600;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(88, 86, 214, 0.1) 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 212, 255, 0.5);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .read-badge {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .read-badge .stat-value {
+            color: #00ff88;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-weight: 600;
+            color: #00d4ff;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        select {
+            padding: 12px 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1em;
+            background: rgba(15, 20, 40, 0.8);
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        select:hover {
+            border-color: #00d4ff;
+            background: rgba(20, 25, 50, 0.9);
+        }
+
+        select:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .book-card {
+            background: rgba(15, 20, 40, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0, 212, 255, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .book-card.read {
+            border: 2px solid rgba(0, 255, 136, 0.4);
+        }
+
+        .book-image-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .book-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .read-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 255, 136, 0.9);
+            color: #0a0e27;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .book-info {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-title {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .book-author {
+            color: #a0a0a0;
+            margin-bottom: 15px;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        .book-details {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #7a7a7a;
+            font-size: 0.9em;
+        }
+
+        .detail-value {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .rating {
+            color: #ffa500;
+            font-weight: bold;
+        }
+
+        .price {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .book-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #00d4ff 0%, #5856d6 100%);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+            margin-top: auto;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+
+        .book-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .free-badge {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>🔒 Cybersecurity Book Collection</h1>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalBooks">0</div>
+                    <div class="stat-label">Total Books</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPages">0</div>
+                    <div class="stat-label">Total Pages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCost">$0.00</div>
+                    <div class="stat-label">Total Cost</div>
+                </div>
+                <div class="stat-card read-badge">
+                    <div class="stat-value" id="booksRead">0</div>
+                    <div class="stat-label">Books Read</div>
+                </div>
+                <div class="stat-card read-badge">
+                    <div class="stat-value" id="pagesRead">0</div>
+                    <div class="stat-label">Pages Read</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <label for="sortBy">Sort by:</label>
+                <select id="sortBy">
+                    <option value="title">Alphabetical (A–Z)</option>
+                    <option value="title-desc">Alphabetical (Z–A)</option>
+                    <option value="price">Price (Low → High)</option>
+                    <option value="price-desc">Price (High → Low)</option>
+                    <option value="pages">Pages (Low → High)</option>
+                    <option value="pages-desc">Pages (High → Low)</option>
+                    <option value="rating">Rating (High → Low)</option>
+                    <option value="rating-desc">Rating (Low → High)</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="books-grid" id="booksGrid"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // =======================
+            // Particle Background
+            // =======================
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) {
+                console.error("Canvas element with id 'particles-canvas' not found.");
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particles = [];
+            const particleCount = 100;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.radius = Math.random() * 2 + 1;
+                    this.speedX = Math.random() * 0.5 - 0.25;
+                    this.speedY = Math.random() * 0.5 - 0.25;
+                }
+
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animateParticles);
+            }
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticles();
+            });
+
+            initParticles();
+            animateParticles();
+
+            // Books Data (with corrected image paths)
+            const books = [
+                { title: "The Web Application Hacker's Handbook", authors: "Dafydd Stuttard, Marcus Pinto", pages: 912, price: 36.47, rating: null, link: "https://www.amazon.com/Web-Application-Hackers-Handbook-Exploiting/dp/1118026470", image: "BookImages/1.jpg" },
+                { title: "The Basics of Web Hacking: Tools and Techniques to Attack the Web", authors: "Joshua J. Pauli", pages: 160, price: 20.89, rating: null, link: "https://www.amazon.com/Basics-Web-Hacking-Techniques-Attack-ebook/dp/B00DZ48KH8", image: "BookImages/2.jpg" },
+                { title: "Practical Web Penetration Testing", authors: "Gus Khawaja", pages: 294, price: 43.99, rating: null, link: "https://www.amazon.com/Practical-Web-Penetration-Testing-applications/dp/1788624033", image: "BookImages/3.jpg" },
+                { title: "Web Penetration Testing with Kali Linux (Third Edition)", authors: "Gilberto Nájera-Gutiérrez", pages: 426, price: 8.47, rating: null, link: "https://www.amazon.com/Web-Penetration-Testing-Kali-Linux-ebook/dp/B078MRV57M", image: "BookImages/4.jpg" },
+                { title: "Kali Linux Web Penetration Testing Cookbook", authors: "Gilberto Nájera-Gutiérrez", pages: 296, price: 51.72, rating: null, link: "https://www.amazon.com/Kali-Linux-Penetration-Testing-Cookbook-ebook/dp/B019OP7JJQ", image: "BookImages/5.jpg" },
+                { title: "Learning Python Web Penetration Testing", authors: "Christian Martorella", pages: 138, price: 32.99, rating: null, link: "https://www.amazon.com/Learning-Python-Web-Penetration-Testing-ebook/dp/B07F3SRDFY", image: "BookImages/6.jpg" },
+                { title: "Real-World Bug Hunting: A Field Guide to Web Hacking", authors: "Peter Yaworski", pages: 264, price: 46.15, rating: 8.5, link: "https://www.amazon.com/Real-World-Bug-Hunting-Field-Hacking/dp/1593278616", image: "BookImages/7.jpg" },
+                { title: "Hands-On Bug Hunting for Penetration Testers", authors: "Joseph Marshall", pages: 250, price: 43.99, rating: null, link: "https://www.amazon.com/Hands-Bug-Hunting-Penetration-Testers/dp/1789344204", image: "BookImages/8.jpg" },
+                { title: "Bug Bounty Hunting for Web Security", authors: "Sanjib Sinha", pages: 241, price: 41.11, rating: null, link: "https://www.amazon.com/Bug-Bounty-Hunting-Security-Vulnerabilities-ebook/dp/B081G6NGN9", image: "BookImages/9.jpg" },
+                { title: "Kali Linux Revealed", authors: "Raphael Hertzog, Jim O'Gorman, Mati Ahroni", pages: 342, price: 51.86, rating: 8, link: "https://www.amazon.com/Kali-Linux-Revealed-Penetration-Distribution/dp/0997615605", image: "BookImages/10.jpg" },
+                { title: "Learning Kali Linux", authors: "Ric Messier", pages: 539, price: 35.63, rating: null, link: "https://www.amazon.com/Learning-Kali-Linux-Security-Penetration/dp/1098154134", image: "BookImages/11.jpg" },
+                { title: "Mastering Kali Linux for Advanced Penetration Testing", authors: "Robert W. Beggs", pages: 356, price: 60.99, rating: 6, link: "https://www.amazon.com/Mastering-Linux-Advanced-Penetration-Testing-ebook/dp/B00LA414LO", image: "BookImages/12.jpg" },
+                { title: "Mastering Kali Linux for Advanced Penetration Testing", authors: "Vijay Kumar Velu", pages: 572, price: 51.72, rating: null, link: "https://www.amazon.com/Mastering-Linux-Advanced-Penetration-Testing/dp/1801819777", image: "BookImages/13.jpg" },
+                { title: "Kali Linux, an Ethical Hacker's Cookbook", authors: "Himanshu Sharma", pages: 472, price: 45.42, rating: null, link: "https://www.amazon.com/Kali-Linux-Practical-strategies-penetration-ebook/dp/B07MG48R7W", image: "BookImages/14.jpg" },
+                { title: "Learn Kali Linux 2019", authors: "Glen D Singh", pages: 550, price: 38.99, rating: null, link: "https://www.amazon.com/Learn-Kali-Linux-2018-hands/dp/1789611806", image: "BookImages/15.jpg" },
+                { title: "Kali Linux Intrusion and Exploitation Cookbook", authors: "Dhruv Shah", pages: 576, price: 46.57, rating: null, link: "https://www.amazon.com/Kali-Linux-Intrusion-Exploitation-Cookbook-ebook/dp/B071V5BWYZ", image: "BookImages/16.jpg" },
+                { title: "Digital Forensics with Kali Linux", authors: "Shiva V. N Parasram", pages: 414, price: 39.52, rating: null, link: "https://www.amazon.com/Digital-Forensics-Kali-Linux-investigation-ebook/dp/B0BSNNGBYK", image: "BookImages/17.jpg" },
+                { title: "Kali Linux Wireless Penetration Testing Cookbook", authors: "Sean-Philip Oriyano", pages: 216, price: 4.19, rating: null, link: "https://www.amazon.com/Linux-Wireless-Penetration-Testing-Cookbook-ebook/dp/B0761XYWXM", image: "BookImages/18.jpg" },
+                { title: "Kali Linux Wireless Penetration Testing Beginner's Guide", authors: "Cameron Buchanan", pages: 210, price: 31.46, rating: null, link: "https://www.amazon.com/Linux-Wireless-Penetration-Testing-Beginners/dp/1788831926", image: "BookImages/19.jpg" },
+                { title: "Ethical Hacking with Kali Linux", authors: "Hugo Hoffman", pages: 153, price: 23.31, rating: 4.5, link: "https://play.google.com/store/audiobooks/details/Ethical_Hacking_With_Kali_Linux_Learn_Fast_How_To_?id=AQAAAECcfwg_hM", image: "BookImages/20.webp" },
+                { title: "Kali Linux Step By Step", authors: "Jason Knox", pages: 176, price: 40.81, rating: 2.8, link: "https://www.amazon.co.uk/Kali-Linux-Jason-Knox/dp/180120070X", image: "BookImages/21.jpg" },
+                { title: "Hacking With Kali Linux", authors: "Darwin Growth", pages: 144, price: 31.14, rating: 2.2, link: "https://www.amazon.com.au/Hacking-Kali-Linux-CyberSecurity-Configurations/dp/1914024281", image: "BookImages/22.jpg" },
+                { title: "Hands-On AWS Penetration Testing with Kali Linux", authors: "Karl Gilbert", pages: 508, price: 48.99, rating: null, link: "https://www.amazon.com/Hands-Penetration-Testing-Kali-Linux-ebook/dp/B07C61YYJ4", image: "BookImages/23.jpg" },
+                { title: "The Hacker Playbook 3 (Red Team Edition)", authors: "Peter Kim", pages: 289, price: 29.95, rating: 8, link: "https://www.amazon.com/Hacker-Playbook-Practical-Penetration-Testing/dp/1980901759", image: "BookImages/24.jpg" },
+                { title: "Advanced Penetration Testing", authors: "Wil Allsopp", pages: 288, price: 24.21, rating: 7.7, link: "https://www.amazon.com/Advanced-Penetration-Testing-Hacking-Networks/dp/1119367689", image: "BookImages/25.jpg" },
+                { title: "Penetration Testing: A Hands-On Introduction To Hacking", authors: "Georgia Weidman", pages: 528, price: 29.87, rating: 6, link: "https://www.amazon.com/Penetration-Testing-Hands-Introduction-Hacking/dp/1593275641", image: "BookImages/26.jpg" },
+                { title: "The Pentester BluePrint", authors: "Phillip L. Wylie", pages: 192, price: 17.92, rating: null, link: "https://www.amazon.com/Pentester-BluePrint-Your-Guide-Being/dp/1119684307", image: "BookImages/27.jpg" },
+                { title: "Learn Penetration Testing", authors: "Rishalin Pillay", pages: 424, price: 6.65, rating: null, link: "https://www.amazon.com/Learn-Penetration-Testing-Understand-penetration/dp/1838640169", image: "BookImages/28.jpg" },
+                { title: "Penetration Testing For Dummies", authors: "Robert Shimonski", pages: 256, price: 19.86, rating: null, link: "https://www.amazon.com/Penetration-Testing-Dummies-Computer-tech/dp/1119577489", image: "BookImages/29.jpg" },
+                { title: "Advanced Penetration Testing For Highly-Secured Environments", authors: "Lee Allen", pages: 414, price: 45.05, rating: null, link: "https://www.amazon.com/Advanced-Penetration-Testing-Highly-Secured-Environments-ebook/dp/B00844O7XA", image: "BookImages/30.jpg" },
+                { title: "Penetration Testing with Shellcode", authors: "Hamza Megahed", pages: 346, price: 172.17, rating: null, link: "https://www.amazon.com.au/Penetration-Testing-Shellcode-Hamza-Megahed/dp/1788473736", image: "BookImages/31.jpg" },
+                { title: "Hands-On Penetration Testing on Windows", authors: "Phil Bramwell", pages: 454, price: 19.92, rating: null, link: "https://www.amazon.com/Hands-Penetration-Testing-Windows-PowerShell/dp/1788295668", image: "BookImages/32.jpg" },
+                { title: "Advanced Infrastructure Penetration Testing", authors: "Chiheb Chebbi", pages: 454, price: 19.92, rating: null, link: "https://www.amazon.com/Advanced-Infrastructure-Penetration-Testing-methodized-ebook/dp/B076QC8FRT", image: "BookImages/33.jpg" },
+                { title: "Black Hat Python", authors: "Justin Seitz", pages: 216, price: 30.48, rating: null, link: "https://www.amazon.com/Black-Hat-Python-2nd-Programming/dp/1718501129", image: "BookImages/34.jpg" },
+                { title: "Python for Offensive PenTest", authors: "Hussam Khrais", pages: 176, price: 15.83, rating: null, link: "https://www.amazon.com/Python-Offensive-PenTest-practical-penetration/dp/1788838971", image: "BookImages/35.jpg" },
+                { title: "Hands-On Penetration Testing with Python", authors: "Furqan Khan", pages: 502, price: 44.15, rating: null, link: "https://www.amazon.com/Hands-Penetration-Testing-Python-intelligent/dp/178899082X", image: "BookImages/36.jpg" },
+                { title: "Python Penetration Testing for Developers", authors: "Christopher Duffy", pages: 666, price: 15.17, rating: null, link: "https://www.amazon.com/Python-Penetration-Developers-Christopher-Duffy/dp/1787128180", image: "BookImages/37.jpg" },
+                { title: "Python Penetration Testing Essentials", authors: "Mohit Raj", pages: 178, price: 18.39, rating: null, link: "https://www.amazon.com/Python-Penetration-Testing-Essentials-Techniques-ebook/dp/B07DGLPGZN", image: "BookImages/38.jpg" },
+                { title: "Beginner Ethical Hacking with Python", authors: "Sanjib Sinha", pages: 269, price: 8, rating: null, link: "https://www.amazon.com/Beginning-Ethical-Hacking-Python-Beginner-ebook/dp/B0871L8YKW", image: "BookImages/39.jpg" },
+                { title: "Metasploit: The Penetration Tester's Guide", authors: "David Kennedy", pages: 288, price: 28.70, rating: null, link: "https://www.amazon.com/Metasploit-2nd-David-Kennedy/dp/1718502982", image: "BookImages/40.jpg" },
+                { title: "Metasploit Penetration Cookbook Second Edition", authors: "Monika Agarwal", pages: 320, price: 47.20, rating: null, link: "https://www.amazon.com/Metasploit-Penetration-Testing-Cookbook-Second/dp/1782166785", image: "BookImages/41.jpg" },
+                { title: "The Complete Metasploit Guide", authors: "Sagar Rahalkar", pages: 660, price: 51.99, rating: null, link: "https://www.amazon.com/Complete-Metasploit-Guide-penetration-techniques-ebook/dp/B07TNPLWX6", image: "BookImages/42.jpg" },
+                { title: "Metasploit Penetration Testing Cookbook", authors: "Nipun Jaswal", pages: 268, price: 7.86, rating: null, link: "https://www.amazon.com/Metasploit-Penetration-Testing-Cookbook-Abhinav-ebook/dp/B008DVPAOY", image: "BookImages/43.jpg" },
+                { title: "Mastering Metasploit", authors: "Nipun Jaswal", pages: 502, price: 46.10, rating: null, link: "https://www.amazon.com/Mastering-Metasploit-security-controls-framework/dp/1838980075", image: "BookImages/44.jpg" },
+                { title: "Learn Ethical Hacking from Scratch", authors: "Zaid Sabih", pages: 564, price: 42.03, rating: null, link: "https://www.amazon.com/Learn-Ethical-Hacking-Scratch-penetration/dp/1788622057", image: "BookImages/45.jpg" },
+                { title: "Becoming the Hacker: The Playbook for Getting Inside the Mind of an Attacker", authors: "Adrian Pruteanu", pages: 404, price: 43.99, rating: null, link: "https://www.amazon.com/Becoming-Hacker-Playbook-Getting-Attacker-ebook/dp/B07BJL3MSR", image: "BookImages/46.jpg" },
+                { title: "Becoming an Ethical Hacker", authors: "Gary Rivlin", pages: 0, price: 7.15, rating: null, link: "https://www.amazon.com/Becoming-Ethical-Hacker-Masters-Work-ebook/dp/B07MKDKB8G", image: "BookImages/47.jpg" },
+                { title: "All in One CEH", authors: "Matt Walker", pages: 576, price: 42.72, rating: null, link: "https://www.amazon.com/Certified-Ethical-Hacker-Guide-Fourth/dp/126045455X", image: "BookImages/48.jpg" },
+                { title: "CEH v11 Study Guide", authors: "Ric Messier", pages: 704, price: 44.00, rating: null, link: "https://www.amazon.com/Certified-Ethical-Hacker-Study-Guide/dp/1119800285", image: "BookImages/49.jpg" },
+                { title: "Certified Ethical Hacker (CEH) Foundation Guide", authors: "Sagar Ajay Rahalkar", pages: 221, price: 34.99, rating: 7.25, link: "https://www.amazon.com/Certified-Ethical-Hacker-Foundation-Guide-ebook/dp/B01MRS3JEQ", image: "BookImages/50.jpg" },
+                { title: "CompTIA Linux+ Study Guide", authors: "Christine Besnahan, Richard Blum", pages: 865, price: 119.33, rating: null, link: "https://www.amazon.com/CompTIA-Linux-Study-Guide-Online/dp/1119784247", image: "BookImages/51.jpg" },
+                { title: "Linux Basics For Hackers", authors: "OccupyTheWeb", pages: 264, price: 27.22, rating: 7.25, link: "https://www.amazon.com/Linux-Basics-Hackers-2nd-OccupyTheWeb/dp/1718503547", image: "BookImages/52.jpg" },
+                { title: "Burp Suite Cookbook", authors: "Sunny Wear", pages: 450, price: 49.99, rating: null, link: "https://www.amazon.com/Burp-Suite-Cookbook-application-security/dp/183508107X", image: "BookImages/53.jpg" },
+                { title: "Practical Network Scanning", authors: "Ajay Singh Chauhan", pages: 326, price: 43.99, rating: null, link: "https://www.amazon.com/Practical-Network-Scanning-vulnerabilities-standard-ebook/dp/B07BWJZ9WD", image: "BookImages/54.jpg" },
+                { title: "The Car Hacker's Handbook: A Guide for the Penetration Tester", authors: "Craig Smith", pages: 304, price: 44.98, rating: null, link: "https://www.amazon.com/Car-Hackers-Handbook-Penetration-Tester/dp/1593277032", image: "BookImages/55.jpg" },
+                { title: "Hands-On Red Team Tactics", authors: "Himanshu Sharma", pages: 480, price: 42.27, rating: null, link: "https://www.amazon.com/Hands-Red-Team-Tactics-operations/dp/1788995236", image: "BookImages/56.jpg" },
+                { title: "Defensive Security Handbook", authors: "Lee Brotherston", pages: 360, price: 34.03, rating: null, link: "https://www.amazon.com/Defensive-Security-Handbook-Practices-Infrastructure/dp/1098127242", image: "BookImages/57.jpg" },
+                { title: "Gray Hat Hacking: The Ethical Hacker's Handbook", authors: "Allen Harper", pages: 704, price: 26.25, rating: null, link: "https://www.amazon.com/Gray-Hat-Hacking-Ethical-Handbook/dp/1264268947", image: "BookImages/58.jpg" },
+                { title: "Hacking the Hacker", authors: "Roger A. Grimes", pages: 320, price: 27.00, rating: null, link: "https://www.amazon.com/Hacking-Hacker-Learn-Experts-Hackers/dp/1119396212", image: "BookImages/59.jpg" },
+                { title: "Hacking For Dummies", authors: "Kevin Beaver", pages: 416, price: 29.66, rating: null, link: "https://www.amazon.com/Hacking-Dummies-Computer-Tech/dp/1394348126", image: "BookImages/60.jpg" },
+                { title: "White Hat Hacking", authors: "Jonathan Smith", pages: 96, price: 50.50, rating: null, link: "https://www.amazon.com/White-Hat-Hacking-High-Tech-Jobs/dp/1502602725", image: "BookImages/61.jpg" },
+                { title: "Hacking - Beginner to Expert Guide", authors: "James Patterson", pages: 93, price: 0, rating: 2, link: "http://repo.darmajaya.ac.id/3933/1/Hacking_%20Beginner%20to%20Expert%20Guide%20to%20Computer%20Hacking%2C%20Basic%20Security%2C%20and%20Penetration%20Testing%20%28Computer%20Science%20Series%29%20%28%20PDFDrive%20%29%20%281%29.pdf", image: "BookImages/62.jpg" },
+                { title: "Cybersecurity: The Beginner's Guide", authors: "Erdal Ozkaya", pages: 396, price: 27.10, rating: null, link: "https://www.amazon.com/Cybersecurity-Beginners-comprehensive-getting-cybersecurity/dp/1789616190", image: "BookImages/63.jpg" },
+                { title: "Cybersecurity for Dummies", authors: "Joseph Steinberg", pages: 432, price: 21.79, rating: null, link: "https://www.amazon.com/Cybersecurity-Dummies-Joseph-Steinberg/dp/1394318723", image: "BookImages/64.jpg" },
+                { title: "Tribe of Hackers: Cybersecurity Advice from the Best Hackers in the World", authors: "Marcus J Carey", pages: 304, price: 22.85, rating: null, link: "https://www.amazon.com/Tribe-Hackers-Cybersecurity-Advice-World/dp/1119643376", image: "BookImages/65.jpg" },
+                { title: "Confident Cyber Security: How to Get Started in Cyber Security and Futureproof Your Career", authors: "Jessica Barker", pages: 256, price: 30.01, rating: null, link: "https://www.amazon.com/Confident-Cyber-Security-Started-Futureproof/dp/1789663407", image: "BookImages/66.jpg" },
+                { title: "See Yourself in Cyber: Security Careers Beyond Hacking", authors: "Ed Adams", pages: 256, price: 19.91, rating: null, link: "https://www.amazon.com/See-Yourself-Cyber-Security-Careers/dp/1394225598", image: "BookImages/67.jpg" },
+                { title: "Cyber Security Threats and Responses for Government and Business", authors: "Jack Caravelli", pages: 264, price: 16.38, rating: null, link: "https://www.amazon.com/Cyber-Security-Responses-Government-International/dp/B0CDV61DWJ", image: "BookImages/68.jpg" },
+                { title: "CISSP in 21 Days", authors: "M. L. Srinivasan", pages: 320, price: 39.99, rating: null, link: "https://www.amazon.com/CISSP-21-Days-M-Srinivasan/dp/1847194508", image: "BookImages/69.jpg" },
+                { title: "Hackers: Heroes of the Computer Revolution", authors: "Steven Levy", pages: 458, price: 21.42, rating: null, link: "https://www.amazon.com/Hackers-Heroes-Computer-Revolution-Anniversary/dp/B017RV1I3C", image: "BookImages/70.jpg" },
+                { title: "Fancy Bear Goes Phishing: The Dark History of the Information Age, in Five Extraordinary Hacks", authors: "Scott J Shapiro", pages: 432, price: 13.83, rating: null, link: "https://www.amazon.com/Fancy-Bear-Goes-Phishing-Extraordinary-ebook/dp/B0BBC8LG9P", image: "BookImages/71.jpg" },
+                { title: "Hack to the Future: How World Governments Relentlessly Pursue and Domesticate Hackers", authors: "Emily Crose", pages: 336, price: 19.80, rating: null, link: "https://www.amazon.com/Hack-Future-Governments-Relentlessly-Domesticate/dp/B0DTB58M55", image: "BookImages/72.jpg" },
+                { title: "No Shortcuts: Why States Struggle to Develop a Military Cyber-Force", authors: "Max Smeets", pages: 296, price: 35.34, rating: null, link: "https://www.amazon.com/No-Shortcuts-Struggle-Military-Cyber-Force-ebook/dp/B0B6WJX9SK", image: "BookImages/73.jpg" },
+                { title: "Mastering Machine Learning for Penetration Testing", authors: "Chiheb Chebbi", pages: 276, price: 43.99, rating: null, link: "https://www.amazon.com/Mastering-Machine-Learning-Penetration-Testing-ebook/dp/B07CSN7QQ1", image: "BookImages/74.jpg" },
+                { title: "OSINT Strategy 2024-2028", authors: "Department of Defense", pages: 16, price: 0, rating: 2, link: "https://www.dia.mil/Portals/110/Documents/OSINT-Strategy.pdf", image: "BookImages/75.jpg" }
+            ];
+
+            let currentBooks = [...books];
+
+            // =======================
+            // Stats Calculation
+            // =======================
+            function calculateStats() {
+                const totalPages = books.reduce((sum, book) => sum + (book.pages || 0), 0);
+                const totalCost = books.reduce((sum, book) => sum + (book.price || 0), 0);
+
+                const readBooks = books.filter(book => book.rating !== null);
+                const booksRead = readBooks.length;
+                const pagesRead = readBooks.reduce((sum, book) => sum + (book.pages || 0), 0);
+
+                document.getElementById('totalBooks').textContent = books.length;
+                document.getElementById('totalPages').textContent = totalPages.toLocaleString();
+                document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+                document.getElementById('booksRead').textContent = booksRead;
+                document.getElementById('pagesRead').textContent = pagesRead.toLocaleString();
+            }
+
+            // =======================
+            // Sorting Function
+            // =======================
+            function sortBooks(sortBy) {
+                switch (sortBy) {
+                    case 'title':
+                        currentBooks.sort((a, b) => a.title.localeCompare(b.title));
+                        break;
+                    case 'title-desc':
+                        currentBooks.sort((a, b) => b.title.localeCompare(a.title));
+                        break;
+                    case 'price':
+                        currentBooks.sort((a, b) => a.price - b.price);
+                        break;
+                    case 'price-desc':
+                        currentBooks.sort((a, b) => b.price - a.price);
+                        break;
+                    case 'pages':
+                        currentBooks.sort((a, b) => a.pages - b.pages);
+                        break;
+                    case 'pages-desc':
+                        currentBooks.sort((a, b) => b.pages - a.pages);
+                        break;
+                    case 'rating':
+                        currentBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                        break;
+                    case 'rating-desc':
+                        currentBooks.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+                        break;
+                }
+                renderBooks(currentBooks);
+            }
+
+            // =======================
+            // Book Rendering
+            // =======================
+            function renderBooks(booksToRender) {
+                const grid = document.getElementById('booksGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+
+                booksToRender.forEach(book => {
+                    const card = document.createElement('div');
+                    card.classList.add('book-card');
+                    if (book.rating !== null) {
+                        card.classList.add('read');
+                    }
+
+                    const priceDisplay = book.price === 0 ?
+                        '<span class="free-badge">Free</span>' :
+                        `<div class="detail-row">
+                        <span class="detail-label">Price</span>
+                        <span class="detail-value price">$${book.price.toFixed(2)}</span>
+                    </div>`;
+
+                    const ratingDisplay = book.rating !== null ?
+                        `<div class="detail-row">
+                        <span class="detail-label">Rating</span>
+                        <span class="detail-value rating">${book.rating}/10</span>
+                    </div>` : '';
+
+                    card.innerHTML = `
+                    <div class="book-image-container">
+                        <img class="book-image" src="${book.image}" alt="${book.title}" onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'">
+                        ${book.rating !== null ? '<div class="read-overlay">Read ✓</div>' : ''}
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">${book.title}</h3>
+                        <p class="book-author">${book.authors}</p>
+                        <div class="book-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Pages</span>
+                                <span class="detail-value">${book.pages}</span>
+                            </div>
+                            ${priceDisplay}
+                            ${ratingDisplay}
+                        </div>
+                        <a href="${book.link}" class="book-link" target="_blank">View Book →</a>
+                    </div>
+                `;
+
+                    grid.appendChild(card);
+                });
+            }
+
+            // =======================
+            // Event Listeners
+            // =======================
+            document.getElementById('sortBy').addEventListener('change', (e) => {
+                sortBooks(e.target.value);
+            });
+
+            // Initialize
+            calculateStats();
+            renderBooks(currentBooks);
+        });
+    </script>
+</body>
+
+</html>
