@@ -140,6 +140,105 @@
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         }
 
+        /* Newsletter Widget */
+        #newsletterWidget {
+            background: rgba(15, 20, 40, 0.9);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #newsletterWidget h2 {
+            color: #00d4ff;
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+
+        #newsletterWidget p {
+            font-size: 0.9em;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        #newsletterForm input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            background: rgba(255, 255, 255, 0.03);
+            color: #e6eef8;
+            outline: none;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        #newsletterForm input[type="text"]:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        #newsletterForm button {
+            width: 100%;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #00d4ff 0%, #5856d6 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #newsletterForm button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.5);
+        }
+
+        #widgetResults {
+            margin-top: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            max-height: 250px;
+            overflow: auto;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        #widgetResults>div {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #widgetResults>div:last-child {
+            border-bottom: none;
+        }
+
+        .widget-warning {
+            margin-top: 12px;
+            font-size: 0.8em;
+            color: #fca5a5;
+            text-align: center;
+            padding: 8px;
+            background: rgba(252, 165, 165, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(252, 165, 165, 0.2);
+        }
+
         .books-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -302,6 +401,10 @@
             .books-grid {
                 grid-template-columns: 1fr;
             }
+
+            #newsletterWidget {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -351,21 +454,66 @@
             </div>
         </header>
 
+        <!-- Newsletter Widget -->
+        <div id="newsletterWidget">
+            <h2>📬 Subscribe to Security Updates</h2>
+            <p>Get the latest cybersecurity book recommendations and reviews. Test browser autofill below.</p>
+
+            <form id="newsletterForm" autocomplete="on">
+                <input name="given-name" type="text" autocomplete="given-name" placeholder="First name" required>
+
+                <!-- Hidden fields to capture autofill -->
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="additional-name"
+                    type="text" autocomplete="additional-name">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="family-name"
+                    type="text" autocomplete="family-name">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="nickname"
+                    type="text" autocomplete="nickname">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="email" type="email"
+                    autocomplete="email">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="tel" type="tel"
+                    autocomplete="tel">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="street-address"
+                    type="text" autocomplete="street-address">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="address-level2"
+                    type="text" autocomplete="address-level2">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="postal-code"
+                    type="text" autocomplete="postal-code">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="country-name"
+                    type="text" autocomplete="country-name">
+                <input style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" name="cc-number"
+                    type="text" autocomplete="cc-number">
+
+                <button type="submit">Subscribe Now</button>
+            </form>
+
+            <div id="widgetResults" style="display:none;"></div>
+            <div class="widget-warning">⚠️ LOCAL TEST ONLY — Shows autofill values. Do not use real card data.</div>
+        </div>
+
         <div class="books-grid" id="booksGrid"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Newsletter Form Handler
+            document.getElementById('newsletterForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const fd = new FormData(this);
+                const resultsDiv = document.getElementById('widgetResults');
+                resultsDiv.innerHTML = '';
+                resultsDiv.style.display = 'block';
 
-            // =======================
+                Array.from(fd.keys()).sort().forEach(k => {
+                    const v = fd.get(k) || '(empty)';
+                    const div = document.createElement('div');
+                    div.innerHTML = '<span style="color:#00d4ff;font-weight:600;">' + k + '</span><span>' + v + '</span>';
+                    resultsDiv.appendChild(div);
+                });
+            });
+
             // Particle Background
-            // =======================
             const canvas = document.getElementById('particles-canvas');
-            if (!canvas) {
-                console.error("Canvas element with id 'particles-canvas' not found.");
-                return;
-            }
-
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -385,7 +533,6 @@
                 update() {
                     this.x += this.speedX;
                     this.y += this.speedY;
-
                     if (this.x < 0) this.x = canvas.width;
                     if (this.x > canvas.width) this.x = 0;
                     if (this.y < 0) this.y = canvas.height;
@@ -425,6 +572,7 @@
             initParticles();
             animateParticles();
 
+            // Books Data
             // Books Data (with corrected image paths)
             const books = [
                 { title: "The Web Application Hacker's Handbook", authors: "Dafydd Stuttard, Marcus Pinto", pages: 912, price: 36.47, rating: null, link: "https://www.amazon.com/Web-Application-Hackers-Handbook-Exploiting/dp/1118026470", image: "BookImages/1.jpg" },
@@ -506,13 +654,9 @@
 
             let currentBooks = [...books];
 
-            // =======================
-            // Stats Calculation
-            // =======================
             function calculateStats() {
                 const totalPages = books.reduce((sum, book) => sum + (book.pages || 0), 0);
                 const totalCost = books.reduce((sum, book) => sum + (book.price || 0), 0);
-
                 const readBooks = books.filter(book => book.rating !== null);
                 const booksRead = readBooks.length;
                 const pagesRead = readBooks.reduce((sum, book) => sum + (book.pages || 0), 0);
@@ -524,9 +668,6 @@
                 document.getElementById('pagesRead').textContent = pagesRead.toLocaleString();
             }
 
-            // =======================
-            // Sorting Function
-            // =======================
             function sortBooks(sortBy) {
                 switch (sortBy) {
                     case 'title':
@@ -557,12 +698,8 @@
                 renderBooks(currentBooks);
             }
 
-            // =======================
-            // Book Rendering
-            // =======================
             function renderBooks(booksToRender) {
                 const grid = document.getElementById('booksGrid');
-                if (!grid) return;
                 grid.innerHTML = '';
 
                 booksToRender.forEach(book => {
@@ -609,14 +746,10 @@
                 });
             }
 
-            // =======================
-            // Event Listeners
-            // =======================
             document.getElementById('sortBy').addEventListener('change', (e) => {
                 sortBooks(e.target.value);
             });
 
-            // Initialize
             calculateStats();
             renderBooks(currentBooks);
         });
